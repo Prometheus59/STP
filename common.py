@@ -16,7 +16,7 @@ class Packet:
         self.payload = p
 
     def toStr(self):
-        return "seqNum: "+str(self.seqNum) + " ackNum: "+ str(self.ackNum) + " checksum: " + str(self.checksum) + " payload: "+ str(self.payload)
+        return "seqNum: "+str(self.seqNum) + " ackNum: "+ str(self.ackNum) + " checksum: " + str(self.checksum) + " payload: " + str(self.payload)
 
 
 class Message:

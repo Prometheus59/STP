@@ -3,17 +3,24 @@ from common import *
 class sender:
     ACK = 0
     RTT = 20
-    #currentSeqNum
-    #currentPacket
+    currentSeqNum = 0
+    currentPacket = 0
     
     def isCorrupted (self, packet):
         #  Check if a received packet (ACK) has been corrupted during transmission.
-        #similar to the corresponding function in receiver side
+        # similar to the corresponding function in receiver side
+
+        ack1 = ACK
+        if (packet.ack != ack1):
+            return True
+        else:
+            return False
+
         return
 
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
-        #similar to the corresponding function in receiver side
+        # similar to the corresponding function in receiver side
         return
  
     def getNextSeqNum(self):
@@ -28,13 +35,23 @@ class sender:
         print("Initializing sender: A: "+str(self.entity))
 
     def init(self):
-        #initialize the currentSeqNum  and currentPacket
+        #initialize the currentSeqNum and currentPacket
+        self.currentSeqNum = 0
+        self.currentPacket = 0
         return
 
     def timerInterrupt(self):
         #This function implements what the sender does in case of timer interrupt
         #It sends the packet again. 
         #It starts the timer, sets the timeout value to be twice the RTT
+
+        #output(msg)
+
+        timeout_val = RTT*2
+        starttimer(12345, timeout_val)
+
+
+
         return
 
 

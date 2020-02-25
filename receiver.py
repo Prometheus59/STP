@@ -7,8 +7,12 @@ class receiver:
     
     def isCorrupted(self, packet):
         #  Check if a received packet has been corrupted during transmission.
-        #Return true if computed checksum is different than packet checksum.
-        return
+        # Return true if computed checksum is different than packet checksum.
+        calc_cs = checksumCalc(packet.payload)
+        if (packet.checksum != calc_cs):
+            return True
+        else:
+            return False
    
     def isDuplicate(self, packet):
         #check if packet sequence number is the same as expected sequence number
