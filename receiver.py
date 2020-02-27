@@ -2,13 +2,14 @@ from common import *
 
 class receiver:
     ACK = 0
-    SEQ = 0;
-    #expectedSeqNum 
+    SEQ = 0
+    #expectedSeqNum
+
     
     def isCorrupted(self, packet):
         #  Check if a received packet has been corrupted during transmission.
         # Return true if computed checksum is different than packet checksum.
-        calc_cs = checksumCalc(packet.payload)
+        calc_cs = checksumCalc(packet)
         if (packet.checksum != calc_cs):
             return True
         else:
@@ -16,11 +17,19 @@ class receiver:
    
     def isDuplicate(self, packet):
         #check if packet sequence number is the same as expected sequence number
-        return
+        if (packet.seqNum != self.SEQ):
+            return False
+        else:
+            return True
     
     def getNextExpectedSeqNum(self):
-        #Use modulo-2 arithmetic to ensure sequence number is 0 or 1.
-        return
+        # Use modulo-2 arithmetic to ensure sequence number is 0 or 1.
+        self.SEQ += 1
+        ans = SEQ % 2
+        if (ans == 1 or ans == 0):
+            return self.SEQ
+
+        return self.SEQ
     
     
     def __init__(self, entityName, ns):
@@ -32,7 +41,7 @@ class receiver:
     def init(self):
         #initialise expected packet sequence number
         return
-         
+        
 
     def input(self, packet):
         
