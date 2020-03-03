@@ -4,15 +4,14 @@ from common import *
 class sender:
     ACK = 0
     RTT = 20
-    currentSeqNum = 0
-    currentPacket = 0
 
     def isCorrupted(self, packet):
         #  Check if a received packet (ACK) has been corrupted during transmission.
         # similar to the corresponding function in receiver side
+        # TODO: Check if ACK (and/or) SEQ must be included in checksum calculation
 
-        ack1 = ACK
-        if (packet.ack != ack1):
+        calc_cs = checksumCalc(packet.payload)
+        if (packet.checksum != calc_cs):
             return True
         else:
             return False
@@ -22,11 +21,19 @@ class sender:
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
-        return
+        if (packet.ACK != self.ACK):
+            return False
+        else:
+            return True
 
     def getNextSeqNum(self):
         # generate the next sequence number to be used
         # similar to the corresponding function in receiver side
+
+        self.ACK += 1
+        mod = self.ACK % 2
+
+        
 
         return
 
@@ -38,7 +45,7 @@ class sender:
     def init(self):
         # initialize the currentSeqNum and currentPacket
         self.currentSeqNum = 0
-        self.currentPacket = 0
+        self.currentPacket = Packet(currentSeqNum, ACK, 0, '')
         return
 
     def timerInterrupt(self):
@@ -47,16 +54,24 @@ class sender:
         # It starts the timer, sets the timeout value to be twice the RTT
 
         # output(msg)
-
-        timeout_val = RTT*2
-        starttimer(12345, timeout_val)
-
+        self.networkSimulator.udtSend(self.entity, currentPacket)
+        timeout_val = self.RTT*2.0
+        self.networkSimulator.startTimer(12345, timeout_val)
+        
         return
 
     def output(self, message):
+        # print("THis is " + message.data)
+        c = checksumCalc(message.data)
+
+        # TODO: Change 'npacket' to 'self.currentPacket'
+        npacket = Packet(self.currentSeqNum, self.ACK, c, message.data)
         # prepare a packet and send the packet through the network layer
+
         # call utdSend
+        self.networkSimulator.udtSend(self.entity, npacket)
         # start the timer
+        self.networkSimulator.startTimer(self.entity, self.RTT)
         # you must ignore the message if there is one packet in transit
         return
 

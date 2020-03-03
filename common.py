@@ -7,13 +7,13 @@ MAXDATASIZE = 20
 
 def checksumCalc(payload):
     # The implemention of function that calculates checksum goes here
-    # Payload here is actually packet
 
-    checksum = payload.ackNum + payload.seqNum
-    for x in payload.payload:
+
+    checksum = 0 #payload.ackNum + payload.seqNum
+    for x in payload:
         checksum += ord(x)
 
-    return
+    return checksum
 
 
 class Packet:
