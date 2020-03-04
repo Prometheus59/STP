@@ -8,19 +8,24 @@ class sender:
     def isCorrupted(self, packet):
         #  Check if a received packet (ACK) has been corrupted during transmission.
         # similar to the corresponding function in receiver side
-
+        print("Packet acknum is: " + str(packet.ackNum))
         calc_cs = checksumCalc(packet)
+
         if (packet.checksum != calc_cs):
+            print("Sender checksum is corrupted")
             return True
         else:
+            print("Sender checksum is NOT corrupted")
             return False
 
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
-        if (packet.ackNum != self.ACK):
+        if (packet.ackNum == self.ACK):
+            print("Sender packet is not duplicate")
             return False
         else:
+            print("Sender packet is duplicated")
             return True
 
     def getNextSeqNum(self):
@@ -28,9 +33,9 @@ class sender:
         # similar to the corresponding function in receiver side
 
         self.currentSeqNum += 1
-        mod = self.currentSeqNum % 2
+        self.currentSeqNum %= 2
 
-        return mod
+        return self.currentSeqNum
 
     def __init__(self, entityName, ns):
         self.entity = entityName
@@ -71,7 +76,7 @@ class sender:
     def input(self, packet):
 
         # If ACK isn't corrupted or duplicate, transmission complete.
-        if (not self.isCorrupted(packet) or not self.isDuplicate(packet)):
+        if (not self.isCorrupted(packet) and not self.isDuplicate(packet)):
         # timer should be stopped, and sequence number should be updated
             self.networkSimulator.stopTimer(self.entity)
             self.seqNum = self.getNextSeqNum()

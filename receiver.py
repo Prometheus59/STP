@@ -10,22 +10,27 @@ class receiver:
         # Return true if computed checksum is different than packet checksum.
         calc_cs = checksumCalc(packet)
         if (packet.checksum != calc_cs):
+            print("Reciever checksum is corrupted")
             return True
         else:
+            print("Reciever checksum is NOT corrupted")
             return False
 
     def isDuplicate(self, packet):
         # check if packet sequence number is the same as expected sequence number
         if (packet.seqNum != self.SEQ):
+            print("Reciever packet is not duplicate")
             return False
         else:
+            print("Reciever packet is duplicated")
             return True
 
-    def getNextExpectedSeqNum(self): #TODO: Compare with packet
+    def getNextExpectedSeqNum(self):
         # Use modulo-2 arithmetic to ensure sequence number is 0 or 1.
-        newseq = self.expectedSeqNum+1
+        self.expectedSeqNum += 1
+        self.expectedSeqNum %= 2
 
-        return newseq%2
+        return self.expectedSeqNum
 
     def __init__(self, entityName, ns):
         self.entity = entityName
@@ -47,8 +52,7 @@ class receiver:
         # a packet with wrong sequence number as there is only 0 and 1.
 
         if (self.isCorrupted(packet) or self.isDuplicate(packet)):
-            packet.seqNum = 5
-            packet.ackNum = self.ACK
+            packet.seqNum = self.getNextExpectedSeqNum()
             self.networkSimulator.udtSend(self.entity, packet)
     
         # If packet is OK (not a duplicate or corrupted), deliver it and send
