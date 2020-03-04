@@ -6,9 +6,9 @@ class receiver:
     SEQ = 0
 
     def isCorrupted(self, packet):
-        #  Check if a received packet has been corrupted during transmission.
+        # Check if a received packet has been corrupted during transmission.
         # Return true if computed checksum is different than packet checksum.
-        calc_cs = checksumCalc(packet.payload)
+        calc_cs = checksumCalc(packet)
         if (packet.checksum != calc_cs):
             return True
         else:
@@ -42,17 +42,20 @@ class receiver:
         # This method will be called whenever a packet sent from the sender
         # arrives at the receiver.
 
-        # If packet is corrupted or duplicate: send ACK with the last ack number of
+        # If packet is corrupted or duplicate: send ACK with the last ACK number of
         # last correctly received packet. In other words, you can say send
         # a packet with wrong sequence number as there is only 0 and 1.
 
         if (self.isCorrupted(packet) or self.isDuplicate(packet)):
-            x = 0
-            
-
-
+            packet.seqNum = 5
+            packet.ackNum = self.ACK
+            self.networkSimulator.udtSend(self.entity, packet)
+    
         # If packet is OK (not a duplicate or corrupted), deliver it and send
         # correct ACK.
+        else:
+            self.networkSimulator.deliverData(self.entity, packet.payload)
+            npacket = Packet(0, packet.seqNum, packet.seqNum, '')
+            self.networkSimulator.udtSend(self.entity, npacket)
 
-        self.networkSimulator.udtSend(A, packet)
         return

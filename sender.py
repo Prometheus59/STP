@@ -8,30 +8,27 @@ class sender:
     def isCorrupted(self, packet):
         #  Check if a received packet (ACK) has been corrupted during transmission.
         # similar to the corresponding function in receiver side
-        # TODO: Check if ACK (and/or) SEQ must be included in checksum calculation
 
-        calc_cs = checksumCalc(packet.payload)
+        calc_cs = checksumCalc(packet)
         if (packet.checksum != calc_cs):
             return True
         else:
             return False
 
-        return
-
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
         if (packet.ackNum != self.ACK):
-            return True
-        else:
             return False
+        else:
+            return True
 
     def getNextSeqNum(self):
         # generate the next sequence number to be used
         # similar to the corresponding function in receiver side
 
-        self.ACK += 1
-        mod = self.ACK % 2
+        self.currentSeqNum += 1
+        mod = self.currentSeqNum % 2
 
         return mod
 
@@ -59,25 +56,25 @@ class sender:
         return
 
     def output(self, message):
+        self.currentPacket = Packet(self.currentSeqNum, self.ACK, 0, message.data)
         # Calculate checksum
-        c = checksumCalc(message.data)
+        c = checksumCalc(self.currentPacket)
         # prepare a packet and send the packet through the network layer
-        self.currentPacket = Packet(self.currentSeqNum, self.ACK, c, message.data)
+        self.currentPacket.checksum = c
         # call utdSend
         self.networkSimulator.udtSend(self.entity, self.currentPacket)
         # start the timer
-        self.networkSimulator.startTimer(self.entity, self.RTT)
+        self.networkSimulator.startTimer(self.entity, 5.0)
         # you must ignore the message if there is one packet in transit
-        # TODO: How to find if there exists a message in transit
         return
 
     def input(self, packet):
 
         # If ACK isn't corrupted or duplicate, transmission complete.
-        if (not self.isCorrupted(packet) and not self.isDuplicate(packet)):
+        if (not self.isCorrupted(packet) or not self.isDuplicate(packet)):
         # timer should be stopped, and sequence number should be updated
-            self.networkSimulator.stopTimer(self.entity);
-            self.ACK += 1   #TODO: Update SEQ number instead?
+            self.networkSimulator.stopTimer(self.entity)
+            self.seqNum = self.getNextSeqNum()
             return
 
         # In the case of duplicate ACK the packet, you do not need to do
