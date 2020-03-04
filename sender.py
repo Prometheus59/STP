@@ -21,10 +21,10 @@ class sender:
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
-        if (packet.ACK != self.ACK):
-            return False
-        else:
+        if (packet.ackNum != self.ACK):
             return True
+        else:
+            return False
 
     def getNextSeqNum(self):
         # generate the next sequence number to be used
@@ -33,9 +33,7 @@ class sender:
         self.ACK += 1
         mod = self.ACK % 2
 
-        
-
-        return
+        return mod
 
     def __init__(self, entityName, ns):
         self.entity = entityName
@@ -45,7 +43,7 @@ class sender:
     def init(self):
         # initialize the currentSeqNum and currentPacket
         self.currentSeqNum = 0
-        self.currentPacket = Packet(currentSeqNum, ACK, 0, '')
+        self.currentPacket = Packet(self.currentSeqNum, self.ACK, 0, '')
         return
 
     def timerInterrupt(self):
@@ -54,31 +52,34 @@ class sender:
         # It starts the timer, sets the timeout value to be twice the RTT
 
         # output(msg)
-        self.networkSimulator.udtSend(self.entity, currentPacket)
-        timeout_val = self.RTT*2.0
+        self.networkSimulator.udtSend(self.entity, self.currentPacket)
+        timeout_val = float(self.RTT*2.0)
         self.networkSimulator.startTimer(12345, timeout_val)
         
         return
 
     def output(self, message):
-        # print("THis is " + message.data)
+        # Calculate checksum
         c = checksumCalc(message.data)
-
-        # TODO: Change 'npacket' to 'self.currentPacket'
-        npacket = Packet(self.currentSeqNum, self.ACK, c, message.data)
         # prepare a packet and send the packet through the network layer
-
+        self.currentPacket = Packet(self.currentSeqNum, self.ACK, c, message.data)
         # call utdSend
-        self.networkSimulator.udtSend(self.entity, npacket)
+        self.networkSimulator.udtSend(self.entity, self.currentPacket)
         # start the timer
         self.networkSimulator.startTimer(self.entity, self.RTT)
         # you must ignore the message if there is one packet in transit
+        # TODO: How to find if there exists a message in transit
         return
 
     def input(self, packet):
 
         # If ACK isn't corrupted or duplicate, transmission complete.
-        # timer should be stopped, and sequence number  should be updated
+        if (not self.isCorrupted(packet) and not self.isDuplicate(packet)):
+        # timer should be stopped, and sequence number should be updated
+            self.networkSimulator.stopTimer(self.entity);
+            self.ACK += 1   #TODO: Update SEQ number instead?
+            return
+
         # In the case of duplicate ACK the packet, you do not need to do
         # anything and the packet will be sent again since the
         # timerInterrupt will be called by the simulator.
