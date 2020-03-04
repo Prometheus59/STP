@@ -18,7 +18,7 @@ class receiver:
 
     def isDuplicate(self, packet):
         # check if packet sequence number is the same as expected sequence number
-        if (packet.seqNum != self.SEQ):
+        if (packet.seqNum != self.getNextExpectedSeqNum):
             print("Reciever packet is not duplicate")
             return False
         else:
@@ -52,14 +52,16 @@ class receiver:
         # a packet with wrong sequence number as there is only 0 and 1.
 
         if (self.isCorrupted(packet) or self.isDuplicate(packet)):
-            packet.seqNum = self.getNextExpectedSeqNum()
+            # packet.seqNum = self.getNextExpectedSeqNum()
+            print("Packet sent to B is corrupted")
             self.networkSimulator.udtSend(self.entity, packet)
     
         # If packet is OK (not a duplicate or corrupted), deliver it and send
         # correct ACK.
         else:
             self.networkSimulator.deliverData(self.entity, packet.payload)
-            npacket = Packet(0, packet.seqNum, packet.seqNum, '')
+            # The following line is probably wrong -> Specifically the 3rd parameter
+            npacket = Packet(packet.seqNum, packet.ackNum, packet.ackNum, '')
             self.networkSimulator.udtSend(self.entity, npacket)
 
         return

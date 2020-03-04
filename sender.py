@@ -61,7 +61,9 @@ class sender:
         return
 
     def output(self, message):
-        self.currentPacket = Packet(self.currentSeqNum, self.ACK, 0, message.data)
+        self.currentPacket.payload = message.data
+        self.currentPacket.ackNum = self.ACK
+        self.currentPacket.seqNum = self.currentSeqNum
         # Calculate checksum
         c = checksumCalc(self.currentPacket)
         # prepare a packet and send the packet through the network layer
@@ -70,7 +72,10 @@ class sender:
         self.networkSimulator.udtSend(self.entity, self.currentPacket)
         # start the timer
         self.networkSimulator.startTimer(self.entity, 5.0)
+
+        # TODO: Find out if packet is in transit, if so ignore this function
         # you must ignore the message if there is one packet in transit
+
         return
 
     def input(self, packet):
@@ -79,8 +84,10 @@ class sender:
         if (not self.isCorrupted(packet) and not self.isDuplicate(packet)):
         # timer should be stopped, and sequence number should be updated
             self.networkSimulator.stopTimer(self.entity)
-            self.seqNum = self.getNextSeqNum()
+            self.currentSeqNum = self.getNextSeqNum()
             return
+        else:
+            print("A - Recieved a corrupted packet")
 
         # In the case of duplicate ACK the packet, you do not need to do
         # anything and the packet will be sent again since the
