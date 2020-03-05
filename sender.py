@@ -70,7 +70,7 @@ class sender:
         # call utdSend
         self.networkSimulator.udtSend(self.entity, self.currentPacket)
         # start the timer (asssuming 10 seconds is a time unit)
-        self.networkSimulator.startTimer(self.entity, 50.0)
+        self.networkSimulator.startTimer(self.entity, 20.0)
 
         return
 
