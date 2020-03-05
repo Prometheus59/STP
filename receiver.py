@@ -19,10 +19,11 @@ class receiver:
     def isDuplicate(self, packet):
         # check if packet sequence number is the same as expected sequence number
         if (packet.seqNum != self.SEQ):
-            print("Reciever packet is not duplicate: Packet.seqNum->" + str(packet.seqNum) + " self.seqNum-> " + str(self.expectedSeqNum))
+            # print("Reciever packet is not duplicate: Packet.seqNum->" + str(packet.seqNum) + " self.seqNum-> " + str(self.expectedSeqNum))
             return False
         else:
-            print("Reciever packet is duplicated: Packet->" + str(packet.seqNum) + " self-> " + str(self.expectedSeqNum))
+            print("Reciever packet is duplicated: Packet.seqNum->" +
+                  str(packet.seqNum) + " self.expectedSeq-> " + str(self.SEQ))
             return True
 
     def getNextExpectedSeqNum(self):
@@ -46,7 +47,7 @@ class receiver:
 
         # This method will be called whenever a packet sent from the sender
         # arrives at the receiver.
-        
+
         # If packet is corrupted or duplicate: send ACK with the last ACK number of
         # last correctly received packet. In other words, you can say send
         # a packet with wrong sequence number as there is only 0 and 1.
@@ -56,15 +57,14 @@ class receiver:
 
         if (self.isCorrupted(packet) or self.isDuplicate(packet)):
             # packet.seqNum = self.getNextExpectedSeqNum()
-            print("Packet sent to B is corrupted/duplicated")
             packet.payload = ''
             # packet.seqNum = (packet.seqNum + 1) % 2
 
-            packet.ackNum = packet.seqNum
+            packet.ackNum = packet.seqNum % 2
             packet.checksum = packet.ackNum
             packet.seqNum = 0
             self.networkSimulator.udtSend(self.entity, packet)
-    
+
         # If packet is OK (not a duplicate or corrupted), deliver it and send
         # correct ACK.
         else:
@@ -74,6 +74,6 @@ class receiver:
             c = checksumCalc(npacket)
             npacket.checksum = c
             self.networkSimulator.udtSend(self.entity, npacket)
-            self.ACK = (self.ACK + 1)%2
+            self.ACK = (self.ACK + 1) % 2
 
         return
