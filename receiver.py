@@ -58,9 +58,11 @@ class receiver:
             # packet.seqNum = self.getNextExpectedSeqNum()
             print("Packet sent to B is corrupted/duplicated")
             packet.payload = ''
-            packet.seqNum = (packet.seqNum + 1) % 2
+            # packet.seqNum = (packet.seqNum + 1) % 2
+
+            packet.ackNum = packet.seqNum
             packet.checksum = packet.ackNum
-            packet.ackNum = self.ACK
+            packet.seqNum = 0
             self.networkSimulator.udtSend(self.entity, packet)
     
         # If packet is OK (not a duplicate or corrupted), deliver it and send

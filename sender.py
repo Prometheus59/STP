@@ -83,7 +83,7 @@ class sender:
             self.currentSeqNum = self.getNextSeqNum()
             return
         else:
-            print("A - Recieved a corrupted packet")
+            print("A - Recieved a corrupted packet, packet will resend")
 
         # In the case of duplicate ACK the packet, you do not need to do
         # anything and the packet will be sent again since the
