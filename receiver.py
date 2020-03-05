@@ -18,11 +18,11 @@ class receiver:
 
     def isDuplicate(self, packet):
         # check if packet sequence number is the same as expected sequence number
-        if (packet.seqNum != self.getNextExpectedSeqNum):
-            print("Reciever packet is not duplicate")
+        if (packet.seqNum != self.getNextExpectedSeqNum()):
+            print("Reciever packet is not duplicate: Packet->" + str(packet.seqNum) + " self-> " + str(self.expectedSeqNum))
             return False
         else:
-            print("Reciever packet is duplicated")
+            print("Reciever packet is duplicated: Packet->" + str(packet.seqNum) + " self-> " + str(self.expectedSeqNum))
             return True
 
     def getNextExpectedSeqNum(self):
@@ -54,14 +54,20 @@ class receiver:
         if (self.isCorrupted(packet) or self.isDuplicate(packet)):
             # packet.seqNum = self.getNextExpectedSeqNum()
             print("Packet sent to B is corrupted")
+            packet.payload = ''
+            packet.seqNum = (packet.seqNum + 1) % 2
             self.networkSimulator.udtSend(self.entity, packet)
     
         # If packet is OK (not a duplicate or corrupted), deliver it and send
         # correct ACK.
         else:
             self.networkSimulator.deliverData(self.entity, packet.payload)
-            # The following line is probably wrong -> Specifically the 3rd parameter
-            npacket = Packet(packet.seqNum, packet.ackNum, packet.ackNum, '')
+
+            npacket = Packet(0, self.ACK, 0, '')
+            c = checksumCalc(npacket)
+            npacket.checksum = c
             self.networkSimulator.udtSend(self.entity, npacket)
+            self.ACK += 1
+            self.ACK %= 2
 
         return

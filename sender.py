@@ -21,7 +21,7 @@ class sender:
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
-        if (packet.ackNum == self.ACK):
+        if (packet.ackNum != self.ACK):
             print("Sender packet is not duplicate")
             return False
         else:
@@ -55,9 +55,8 @@ class sender:
 
         # output(msg)
         self.networkSimulator.udtSend(self.entity, self.currentPacket)
-        timeout_val = float(self.RTT*2.0)
-        self.networkSimulator.startTimer(12345, timeout_val)
-        
+        self.networkSimulator.startTimer(self.entity, float(self.RTT*2.0))
+
         return
 
     def output(self, message):
@@ -70,19 +69,16 @@ class sender:
         self.currentPacket.checksum = c
         # call utdSend
         self.networkSimulator.udtSend(self.entity, self.currentPacket)
-        # start the timer
-        self.networkSimulator.startTimer(self.entity, 5.0)
-
-        # TODO: Find out if packet is in transit, if so ignore this function
-        # you must ignore the message if there is one packet in transit
+        # start the timer (asssuming 10 seconds is a time unit)
+        self.networkSimulator.startTimer(self.entity, 50.0)
 
         return
 
     def input(self, packet):
 
         # If ACK isn't corrupted or duplicate, transmission complete.
-        if (not self.isCorrupted(packet) and not self.isDuplicate(packet)):
-        # timer should be stopped, and sequence number should be updated
+        if ((not self.isCorrupted(packet)) or (not self.isDuplicate(packet))):
+            # timer should be stopped, and sequence number should be updated
             self.networkSimulator.stopTimer(self.entity)
             self.currentSeqNum = self.getNextSeqNum()
             return

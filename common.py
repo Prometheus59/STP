@@ -1,6 +1,6 @@
 A = 12345
 B = 67890
-TRACE = 3
+TRACE = 2
 # This constant controls the maximum size of the buffer in a Message and in a Packet
 MAXDATASIZE = 20
 
