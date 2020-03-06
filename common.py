@@ -1,9 +1,18 @@
+'''
+------------------------------------------------------
+Names: Ryan Karumanchery & Ramandeep Saini
+Date: March 6th, 2020
+Description: Implementing Reliable transport protocal
+Course: CP372
+Proffesor: Dr. Rudafshani
+------------------------------------------------------
+'''
+
 A = 12345
 B = 67890
 TRACE = 2
 # This constant controls the maximum size of the buffer in a Message and in a Packet
 MAXDATASIZE = 20
-
 
 def checksumCalc(packet):
     # The implemention of function that calculates checksum goes here

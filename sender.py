@@ -1,5 +1,14 @@
-from common import *
+'''
+------------------------------------------------------
+Names: Ryan Karumanchery & Ramandeep Saini
+Date: March 6th, 2020
+Description: Implementing Reliable transport protocal
+Course: CP372
+Proffesor: Dr. Rudafshani
+------------------------------------------------------
+'''
 
+from common import *
 
 class sender:
     ACK = 0
@@ -13,9 +22,13 @@ class sender:
 
         if (packet.checksum != calc_cs):
             print("Sender checksum is corrupted")
+            print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
             return True
         else:
-            # print("Sender checksum is NOT corrupted")
+            if (packet.ackNum != self.currentSeqNum):
+                return True
+            print("Sender checksum is NOT corrupted")
+            print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
             return False
 
     def isDuplicate(self, packet):
