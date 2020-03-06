@@ -21,26 +21,26 @@ class sender:
         calc_cs = checksumCalc(packet)
 
         if (packet.checksum != calc_cs):
-            print("Sender checksum is corrupted")
-            print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
+            # print("Sender checksum is corrupted")
+            # print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
             return True
         else:
             if (packet.ackNum != self.currentSeqNum):
                 return True
-            print("Sender checksum is NOT corrupted")
-            print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
+            # print("Sender checksum is NOT corrupted")
+            # print("packet.checksum = " + str(packet.checksum) + ", calc_cs = " + str(calc_cs))
             return False
 
     def isDuplicate(self, packet):
         # checks if an ACK is duplicate or not
         # similar to the corresponding function in receiver side
         if (packet.ackNum != self.ACK):
-            print("Sender packet is not duplicate")
-            print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
+            # print("Sender packet is not duplicate")
+            # print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
             return False
         else:
-            print("Sender packet is duplicated")
-            print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
+            # print("Sender packet is duplicated")
+            # print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
             return True
 
     def getNextSeqNum(self):
@@ -98,8 +98,8 @@ class sender:
             self.networkSimulator.stopTimer(self.entity)
             self.currentSeqNum = self.getNextSeqNum()
             return
-        else:
-            print("A - Recieved a corrupted packet, packet will resend")
+        # else:
+            # print("A - Recieved a corrupted packet, packet will resend")
 
         # In the case of duplicate ACK the packet, you do not need to do
         # anything and the packet will be sent again since the

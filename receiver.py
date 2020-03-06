@@ -19,7 +19,7 @@ class receiver:
         # Return true if computed checksum is different than packet checksum.
         calc_cs = checksumCalc(packet)
         if (packet.checksum != calc_cs):
-            print("Reciever checksum is corrupted")
+            #print("Reciever checksum is corrupted")
             return True
         else:
             # print("Reciever checksum is NOT corrupted")
@@ -28,12 +28,16 @@ class receiver:
     def isDuplicate(self, packet):
         # check if packet sequence number is the same as expected sequence number
         if (packet.seqNum != self.SEQ):
+            '''
             print("Reciever packet is not duplicate: Packet.seqNum->" +
                   str(packet.seqNum) + " self.seqNum-> " + str(self.expectedSeqNum))
+            '''
             return False
         else:
+            '''
             print("Reciever packet is duplicated: Packet.seqNum->" +
                   str(packet.seqNum) + " self.SEQ-> " + str(self.SEQ))
+            '''
             return True
 
     def getNextExpectedSeqNum(self):
