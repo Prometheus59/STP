@@ -8,14 +8,14 @@ class sender:
     def isCorrupted(self, packet):
         #  Check if a received packet (ACK) has been corrupted during transmission.
         # similar to the corresponding function in receiver side
-        print("Packet acknum is: " + str(packet.ackNum))
+        # print("Packet acknum is: " + str(packet.ackNum))
         calc_cs = checksumCalc(packet)
 
         if (packet.checksum != calc_cs):
             print("Sender checksum is corrupted")
             return True
         else:
-            print("Sender checksum is NOT corrupted")
+            # print("Sender checksum is NOT corrupted")
             return False
 
     def isDuplicate(self, packet):
@@ -23,9 +23,11 @@ class sender:
         # similar to the corresponding function in receiver side
         if (packet.ackNum != self.ACK):
             print("Sender packet is not duplicate")
+            print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
             return False
         else:
             print("Sender packet is duplicated")
+            print("Sender: Packet.acknum = " + str(packet.ackNum) + ", self.ACK = " + str(self.ACK))
             return True
 
     def getNextSeqNum(self):
@@ -61,7 +63,7 @@ class sender:
 
     def output(self, message):
         self.currentPacket.payload = message.data
-        self.currentPacket.ackNum = self.ACK
+        self.currentPacket.ackNum = 0
         self.currentPacket.seqNum = self.currentSeqNum
         # Calculate checksum
         c = checksumCalc(self.currentPacket)
@@ -74,6 +76,7 @@ class sender:
 
         return
 
+    
     def input(self, packet):
 
         # If ACK isn't corrupted or duplicate, transmission complete.
@@ -88,4 +91,5 @@ class sender:
         # In the case of duplicate ACK the packet, you do not need to do
         # anything and the packet will be sent again since the
         # timerInterrupt will be called by the simulator.
+        self.ACK = (self.ACK+1)%2
         return
